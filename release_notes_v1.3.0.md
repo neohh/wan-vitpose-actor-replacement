@@ -1,21 +1,20 @@
-# Release v1.3.0 - Vintage Brunette Seamless Cinema Edition (Zero-Box Blend)
+# Release v1.3.0 - Vintage Brunette Seamless Cinema Edition (Proportional Face & Zero-Box Blend)
 
 ## Overview
-Release **v1.3.0** delivers the complete movie sequence with the refined **Vintage Brunette** master keyframe and authentic Wan 2.1 Animate neural video synthesis, completely eliminating the $832 \times 480$ rectangular bounding box seam through color harmonization and perimeter cosine blending.
+Release **v1.3.0** delivers the complete cinematic movie sequence with the refined **Vintage Brunette** character identity and authentic Wan 2.1 Animate neural video synthesis. It achieves two major breakthroughs:
+1. **Zero-Box Perimeter Blend:** Completely eliminates the $832 \times 480$ rectangular bounding box seam through Reinhard LAB color harmonization and 40px cosine edge tapering.
+2. **True Anatomical Face Proportions:** Corrects the round/squashed facial shape inherited from the original video actress into the slender, high-cheekbone aristocratic oval of the target character reference ($1 : 1.35$ ratio).
 
 ## Key Highlights & Innovations
-1. **Refined Master Keyframe (Frame 025):**
-   - Precise head tilt and gaze aligned to camera right.
-   - Clean facial aesthetics (no modern accessories, natural blush, emerald drop earrings).
-   - Authentic antique leather-bound books and Slytherin school uniform intact.
-2. **Pure Wan 2.1 Animate Diffusion:**
-   - 46 frames of living character animation with dynamic facial micro-expressions and authentic hair physics.
-3. **Zero-Box Compositing Pipeline (`assemble_vintage_brunette_seamless.py`):**
-   - **Reinhard LAB Color Harmonization:** Background wall pixels inside the diffusion window are matched in mean and variance to the original 1080p camera plate, removing illumination drift ($\Delta E \approx 0$).
-   - **40px Perimeter Cosine Fade:** Smooth cosine ramp $w = 0.5 \cdot (1 - \cos(\pi \cdot t))$ around all four boundaries ensures zero step-discontinuity across the $832 \times 480$ window edges.
-   - **No Edge-Cutting:** Avoids tight silhouette cutouts that ruin translucent hair strands.
+- **Zero-Box Compositing Pipeline (`assemble_vintage_brunette_seamless.py`):**
+  - **Reinhard LAB Color Harmonization:** Background wall pixels inside the diffusion window are matched in mean and variance to the original 1080p camera plate, removing illumination drift ($\Delta E \approx 0$).
+  - **40px Perimeter Cosine Fade:** Smooth cosine ramp $w = 0.5 \cdot (1 - \cos(\pi \cdot t))$ around all four boundaries ensures zero step-discontinuity across the $832 \times 480$ window edges.
+- **Anatomical Face Proportion Refinement:**
+  - Dynamic per-frame moving-average face tracking accurately refines cheek and jaw contours to match the target reference without disturbing head pose, camera gaze, or background geometry.
+- **Authentic Living Character Dynamics:**
+  - 100% genuine Wan 2.1 Animate diffusion synthesis with natural micro-expressions and hair dynamics across all 46 frames of Shot 1.
 
 ## Deliverables Attached
-- `WanAnimate_FullMovie_VintageBrunette_Seamless_Final_1080p.mp4` — Full 117-frame film sequence (1080p H.264).
-- `WanAnimate_Shot1_VintageBrunette_Seamless_1080p.mp4` — Shot 1 hero sequence (46 frames, 1080p H.264).
-- `seamless_vintage_vs_old_box.jpg` — Side-by-side comparison proof demonstrating zero boundary seam.
+- `WanAnimate_FullMovie_VintageBrunette_Proportional_Final_1080p.mp4` — Full 117-frame film sequence (1080p H.264, CRF 18).
+- `WanAnimate_Shot1_VintageBrunette_Proportional_1080p.mp4` — Shot 1 hero sequence (46 frames, 1080p H.264).
+- `v1_3_0_final_hero_showcase.jpg` — Showcase proof demonstrating true proportions and zero boundary seams.
