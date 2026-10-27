@@ -1,17 +1,31 @@
 # Wan-ViTPose Actor Replacement
 
-> **Cinematic character and actor replacement in video using Wan 2.1 Animate, ViTPose wholebody skeleton tracking, two-stage precision master keyframing, and inverted face-oval edge harmonization.**
+> **Cinematic character and actor replacement in video using Wan 2.1 Animate, ViTPose wholebody skeleton tracking, two-stage precision master keyframing, and true secondary low-denoise boundary diffusion.**
 
-[![GitHub release](https://img.shields.io/badge/release-v1.1.0-blue.svg)](https://github.com/neohh/wan-vitpose-actor-replacement/releases)
+[![GitHub release](https://img.shields.io/badge/release-v1.2.0-blue.svg)](https://github.com/neohh/wan-vitpose-actor-replacement/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-brightgreen.svg)](https://www.python.org/)
 [![ComfyUI Compatible](https://img.shields.io/badge/ComfyUI-Wan2.1_Animate-orange.svg)](https://github.com/comfyanonymous/ComfyUI)
 
-![Master Keyframe Comparison](examples/perfect_master_keyframe_025_card.jpg)
+![True Low Denoise Seam Fusion](docs/shot1_true_low_denoise_comparison_card.jpg)
 
 ---
 
-## 🌟 What's New in v1.1.0: Two-Stage Precision Master Keyframing
+## 🌟 What's New in v1.2.0: True Secondary Low-Denoise Diffusion Pass (Seam & Collar Fusion)
+
+When cutting and pasting characters into live plates, post-processing filters (like bilateral or gaussian filters) fail because they only blur pixels—they cannot synthesize lighting, generate fine hair strands interacting with the background, or re-render fabric at neck seams.
+
+**v1.2.0 introduces the True Secondary Low-Denoise Diffusion Pass (`denoise_strength = 0.28`):**
+1. **Inverted Face-Oval Diffusion Mask (`inv_face_mask`):**
+   - **Face interior = 0.0 (Black, 0% denoise):** The facial features, gaze, subtle smile, and 12° head tilt are completely protected from any noise or blur.
+   - **Boundary & neck seam = 1.0 (White, 0.28 denoise):** Exposed to low-strength diffusion.
+2. **Latent Inpainting via `WanVideoSampler`:**
+   - Pre-blended video latents are passed directly into the sampler with `steps = 12` and `denoise_strength = 0.28` (only the final 4 timesteps `[483, 421, 374, 352]` are evaluated).
+   - The model physically weaves hair backlight into the background architecture and cleanly dissolves neck/collar cut seams into authentic fabric shadows.
+
+---
+
+## 🌟 Features from v1.1.0: Two-Stage Precision Master Keyframing
 
 Standard 2D text-to-image and diffusion generators suffer from a notorious flaw: when given a central or walking composition, they **flatten 3D perspective and re-center the head forward like a passport photo**, completely erasing subtle 3D head tilts (~12°), camera yaw angles, and micro-mimicry (such as subtle closed-mouth smiles with lifted lip corners).
 
