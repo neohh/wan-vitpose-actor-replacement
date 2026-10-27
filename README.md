@@ -1,51 +1,51 @@
 # Wan-ViTPose Actor Replacement
 
-> **Cinematic character and actor replacement in video using Wan 2.1 Animate, ViTPose wholebody skeleton tracking, expanded hair masking, and inverted face-oval edge harmonization.**
+> **Cinematic character and actor replacement in video using Wan 2.1 Animate, ViTPose wholebody skeleton tracking, two-stage precision master keyframing, and inverted face-oval edge harmonization.**
 
-[![GitHub release](https://img.shields.io/badge/release-v1.0.0-blue.svg)](https://github.com/neohh/wan-vitpose-actor-replacement/releases)
+[![GitHub release](https://img.shields.io/badge/release-v1.1.0-blue.svg)](https://github.com/neohh/wan-vitpose-actor-replacement/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-brightgreen.svg)](https://www.python.org/)
 [![ComfyUI Compatible](https://img.shields.io/badge/ComfyUI-Wan2.1_Animate-orange.svg)](https://github.com/comfyanonymous/ComfyUI)
 
-![Comparison Hero](examples/vitpose_comparison_card_f25.jpg)
+![Master Keyframe Comparison](examples/perfect_master_keyframe_025_card.jpg)
 
 ---
 
-## 🎯 The Core Problem & Solution
+## 🌟 What's New in v1.1.0: Two-Stage Precision Master Keyframing
 
-### ❌ Why standard 2D Image & Face-Swap Approaches Fail:
-1. **The "Bobblehead" & Zero-Degree Tilt Problem:** Standard text-to-image generators recompose the head like a passport photo (0° vertical tilt, blank stare, enlarged scale), completely ignoring the original actor's natural head tilt, scale relative to shoulders, and expressive nuance.
-2. **Hair Volume Cutoffs:** Traditional face bboxes clip voluminous hairstyles (shaggy bobs, curtain bangs, curls) at the bounding box border.
-3. **Erasing Props & Clothes:** Full-body masking overwrites held objects (books, wands, phones, bags) and authentic costumes with hallucinated garments.
+Standard 2D text-to-image and diffusion generators suffer from a notorious flaw: when given a central or walking composition, they **flatten 3D perspective and re-center the head forward like a passport photo**, completely erasing subtle 3D head tilts (~12°), camera yaw angles, and micro-mimicry (such as subtle closed-mouth smiles with lifted lip corners).
 
-### ✅ The ViTPose + Wan 2.1 Solution:
-1. **ViTPose Wholebody Skeleton Tracking:** Extracts frame-by-frame 2D joint keypoints (eyes, nose, ears, neck, shoulders, arms, hands) via `vitpose-l-wholebody.onnx` + `yolov10m.onnx`. Feeding this to `WanVideoAnimateEmbeds` forces the diffusion model to strictly follow the original actor's head tilt (~12°), 1.0x scale, and walking posture.
-2. **Expanded Hair & Anatomy Masking:** Dynamically dilates the head mask (+35 px ellipse) to provide full volume for curls, bangs, and hair movement, while clamping above hands and props so books and hands stay 100% original.
-3. **Inverted Face-Oval Edge Harmonization (`inv_face_mask`):**
-   - **Face Interior ($0.0$):** Fully protected from any blur or denoising, keeping 100% razor-sharp AI features.
-   - **Outer Hair Perimeter & Collar ($1.0$):** Smoothly blended with the background and collar using edge-modulated bilateral filtering.
+**v1.1.0 introduces the Two-Stage Precision Master Keyframe Pipeline:**
+1. **Stage 1 (Geometric 3D Pose & Mimicry Anchor):**
+   - Projects character identity onto the live actor plate using deep landmark alignment.
+   - **Locks 100% of the actor's physical 3D head tilt (~12°), 3/4 camera rotation, and smile curve into the pixel grid.**
+2. **Stage 2 (Volumetric Hair & Identity Diffusion Transfer):**
+   - Inpaints the character's voluminous haircut (layered wavy bob, bangs, curls) and skin/lighting.
+   - Because the 3D tilt and smile are already physically anchored, diffusion **never straightens the head** or breaks the actor's natural emotion.
 
 ---
 
-## 🏗️ Pipeline Architecture
+## 🎯 The Complete Pipeline
 
 ```mermaid
 flowchart TD
-    A["Original Footage (1080p Video)"] --> B["Crop Character Region (e.g. 832x480)"]
-    A --> C["ViTPose Wholebody Tracker (vitpose-l-wholebody.onnx)"]
-    C --> D["Pose Skeleton Sequence (draw_head=True)"]
+    A["Original Footage (1080p Video Plate)"] --> B["Stage 1: Geometric 3D Pose & Smile Anchor"]
+    REF["Target Character Ref Image"] --> B
+    B --> C["Stage 2: Volumetric Hair Diffusion Transfer"]
+    REF --> C
+    C --> D["Precision Master Keyframe (100% Tilt & Smile Match)"]
     
-    B --> E["Expanded Hair Mask (+35px ellipse, clamp props)"]
+    A --> E["ViTPose Wholebody Tracker (vitpose-l-wholebody.onnx)"]
+    E --> F["Skeleton Motion Sequence"]
     
-    D --> F["Wan 2.1 Animate Diffusion Engine"]
-    E --> F
-    REF["Target Character Ref Image (512x512)"] --> F
+    D --> G["Wan 2.1 Animate Video Diffusion Engine"]
+    F --> G
+    A --> H["Expanded Hair Mask (+35px ellipse, clamp props)"]
+    H --> G
     
-    F --> G["Raw Generated Video Crop"]
-    
-    G --> H["Inverted Face-Oval Harmonizer (inv_face_mask)"]
-    B --> H
-    H --> I["Final 1080p Master Video (Preserved Books, Authentic Uniform)"]
+    G --> I["Raw Generated Video Crop"]
+    I --> J["Inverted Face-Oval Harmonizer (inv_face_mask)"]
+    J --> K["Final 1080p Master Movie (Preserved Books, Hands & Real Corridor)"]
 ```
 
 ---
@@ -60,30 +60,30 @@ cd wan-vitpose-actor-replacement
 pip install -r requirements.txt
 ```
 
-### 2. ComfyUI Prerequisites
+### 2. Generate a Precision Master Keyframe
 
-Ensure the following custom nodes and models are installed in your ComfyUI instance:
-- [ComfyUI-WanVideoWrapper](https://github.com/kijai/ComfyUI-WanVideoWrapper) or Wan 2.1 Animate integration
-- `vitpose-l-wholebody.onnx` and `yolov10m.onnx` placed in `ComfyUI/models/onnx/`
-- `Wan2.1_Animate` 14B / 1.3B checkpoint
+```bash
+python create_master_keyframe.py \
+    --source path/to/movie_frame_025.png \
+    --ref path/to/character_ref.png \
+    --output master_keyframe_025.png \
+    --hair-desc "voluminous layered dark brown wavy textured bob haircut with soft curtain bangs" \
+    --char-desc "young woman with dark brown eyes, delicate slender nose, and porcelain skin"
+```
 
-### 3. Generate Character Video via ComfyUI
-
-You can run the included workflow directly via the ComfyUI UI (`workflows/wan_vitpose_animate_ui.json`) or via API:
+### 3. Run Wan 2.1 Animate via ComfyUI
 
 ```bash
 python queue_wan_job.py \
     --workflow workflows/wan_vitpose_animate_api.json \
     --crop path/to/scene_crop_832x480.mp4 \
     --mask path/to/expanded_mask_832x480.mp4 \
-    --ref path/to/new_character_ref.png \
-    --prompt "cinematic footage of young woman, dirty blonde shaggy bob, curtain bangs, natural somber expression" \
+    --ref master_keyframe_025.png \
+    --prompt "cinematic footage of young woman, layered dark brown wavy bob, subtle pleasant smile, Slytherin uniform" \
     --url "http://127.0.0.1:8188"
 ```
 
-### 4. Post-Process & Harmonize to 1080p Master
-
-Run the CLI harmonizer on any shot to apply color-matching and the inverted face-oval edge filter:
+### 4. Harmonize & Composite into 1080p Master
 
 ```bash
 python replace_actor.py \
@@ -96,44 +96,14 @@ python replace_actor.py \
     --hair-dilate 35
 ```
 
-#### CLI Options:
-| Flag | Description | Default |
-|---|---|---|
-| `--input` | Original source video file | *required* |
-| `--raw-gen` | Raw crop output from Wan 2.1 Animate | *required* |
-| `--mask` | Head/body mask video in crop space | *required* |
-| `--output` | Destination 1080p video file | *required* |
-| `--crop-box` | Bounding box coordinates `X1 Y1 X2 Y2` in source frame | *required* |
-| `--clamp-bottom`| Crop Y coordinate below which mask is zeroed (preserves books/hands) | `None` |
-| `--hair-dilate` | Morphological dilation radius for hair volume | `35` |
-| `--face-rx` | Horizontal radius of protected face oval | `50` |
-| `--face-ry` | Vertical radius of protected face oval | `70` |
-
 ---
 
-## 🎬 Multi-Shot Timeline Stitching
+## 🔬 Precision Comparison
 
-To assemble a finished cinematic scene containing multiple shots (e.g. replaced character shots combined with untouched live-action camera shots):
-
-```python
-from core.timeline import assemble_timeline
-
-shots = [
-    {"video_path": "shot1_replaced_1080p.mp4", "start_frame": 0, "end_frame": 45},
-    {"video_path": "original_footage_1080p.mp4", "start_frame": 46, "end_frame": 81}, # 100% untouched
-    {"video_path": "shot3_replaced_1080p.mp4", "start_frame": 0, "end_frame": 34},
-]
-
-assemble_timeline(shots, output_path="master_film_1080p.mp4", fps=24.0)
-```
-
----
-
-## 🔬 Comparison & Inspection
-
-| Original Footage | ViTPose Wan 2.1 | Final Harmonized Master |
-|:---:|:---:|:---:|
-| ![Original Actor](examples/compare_vitpose_vs_orig_f25.jpg) | *(Exact tilt ~12°, scale 1.0x)* | ![Final Master](examples/vitpose_lowdenoise_hero_f25_1080p.jpg) |
+| Original Actor | Option 2 Character Ref | Master Head Result | Full 1080p Master Scene |
+|:---:|:---:|:---:|:---:|
+| **Angle ~12° & Smile** | **Target Identity** | **1:1 Tilt & Smile Curve** | **Preserved Books & Uniform** |
+| ![Actor](examples/perfect_master_keyframe_025_card.jpg) | | | |
 
 ---
 
