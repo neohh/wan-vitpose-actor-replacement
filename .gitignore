@@ -1,0 +1,24 @@
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.venv/
+venv/
+ENV/
+
+# Intermediate videos and large renders (only keep small preview assets in examples/)
+*.mp4
+*.avi
+*.mov
+!examples/*.mp4
+
+# Models
+*.onnx
+*.safetensors
+*.ckpt
+*.pt
+*.bin
+
+# OS
+.DS_Store
+Thumbs.db
