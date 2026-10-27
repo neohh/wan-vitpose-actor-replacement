@@ -1,13 +1,22 @@
 # Wan-ViTPose Actor Replacement
 
-> **Cinematic character and actor replacement in video using Wan 2.1 Animate, ViTPose wholebody skeleton tracking, two-stage precision master keyframing, and true secondary low-denoise boundary diffusion.**
+> **Cinematic character and actor replacement in video using Wan 2.1 Animate, ViTPose wholebody skeleton tracking, two-stage precision master keyframing, and zero-box seamless cosine color harmonization.**
 
-[![GitHub release](https://img.shields.io/badge/release-v1.2.0-blue.svg)](https://github.com/neohh/wan-vitpose-actor-replacement/releases)
+[![GitHub release](https://img.shields.io/badge/release-v1.3.0-blue.svg)](https://github.com/neohh/wan-vitpose-actor-replacement/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-brightgreen.svg)](https://www.python.org/)
 [![ComfyUI Compatible](https://img.shields.io/badge/ComfyUI-Wan2.1_Animate-orange.svg)](https://github.com/comfyanonymous/ComfyUI)
 
-![True Low Denoise Seam Fusion](docs/shot1_true_low_denoise_comparison_card.jpg)
+---
+
+## 🌟 What's New in v1.3.0: Vintage Brunette Seamless Cinema Edition (Zero-Box Blend)
+
+Release **v1.3.0** eliminates the rectangular  \times 480$ diffusion window artifact when re-inserting Wan 2.1 Animate video crops into full 1080p camera plates.
+
+### The Innovation:
+1. **Per-Frame Reinhard LAB Color Harmonization:** Background wall pixels inside the diffusion window are matched in mean and variance to the original 1080p camera plate, removing illumination drift ($\Delta E \approx 0$).
+2. **40px Perimeter Cosine Fade:** Smooth cosine ramp  = 0.5 \cdot (1 - \cos(\pi \cdot t))$ around all four boundaries ensures zero step-discontinuity across window borders.
+3. **Preservation of Living Diffusion:** All 46 frames of Shot 1 feature authentic Wan 2.1 video synthesis with natural micro-expressions and hair dynamics.
 
 ---
 
