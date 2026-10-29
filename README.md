@@ -2,10 +2,24 @@
 
 > **Cinematic character and actor replacement in video using Wan 2.1 Animate, ViTPose wholebody skeleton tracking, two-stage precision master keyframing, and zero-box seamless cosine color harmonization.**
 
-[![GitHub release](https://img.shields.io/badge/release-v1.3.0-blue.svg)](https://github.com/neohh/wan-vitpose-actor-replacement/releases)
+[![GitHub release](https://img.shields.io/badge/release-v1.4.0-blue.svg)](https://github.com/neohh/wan-vitpose-actor-replacement/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-brightgreen.svg)](https://www.python.org/)
 [![ComfyUI Compatible](https://img.shields.io/badge/ComfyUI-Wan2.1_Animate-orange.svg)](https://github.com/comfyanonymous/ComfyUI)
+
+---
+
+## What's New in v1.4.0: User Face+Hair Rect Wipe (Working Norm)
+
+**Norm working release** for short-hair (and other) refs without shoulder-length ghost hair from the original plate.
+
+1. Paint a face+hair mask on the plate (or reuse one).
+2. `build_user_facehair_rect_mask.py` turns it into a padded AABB rect wipe (`pad` + temporal max-envelope, no Y-cap above shoulders).
+3. Run `WanAnimate_Shot1_RefGlasses_UserRect_API.json` with your face ref — swap ref/prompts for other identities.
+
+**Automatic:** rect from mask bounds, pose tracking on the driver. **Not automatic:** you still supply the face+hair mask and the face ref; change `--crop` when the shot window is not Shot 1 (`594:1426, 160:640`).
+
+See [`release_notes_v1.4.0.md`](release_notes_v1.4.0.md).
 
 ---
 
